@@ -11,7 +11,7 @@ machine-readable `ModelSpec`, and inspect Wolfram-based equilibrium reports.
 ```powershell
 git clone <repo-url>
 cd game-theory-agent-workbench
-conda env create -f environment.yml
+conda env create -f environment.local.yml
 conda activate gta
 pip install -e .
 python -m streamlit run streamlit_app.py
@@ -57,12 +57,6 @@ GTA_DEMO_MODE=1
 Demo mode uses a synthetic responsible-sourcing example with precomputed
 artifacts. It does not call external LLM APIs and does not run WolframScript.
 
-## Generated Files
-
-User projects, uploaded papers, logs, and generated outputs are written under
-`output/` and are intentionally ignored by git.
-
-Do not commit `.env`, real papers, or generated project outputs.
 
 ---
 
@@ -77,7 +71,7 @@ Do not commit `.env`, real papers, or generated project outputs.
 ```powershell
 git clone <repo-url>
 cd game-theory-agent-workbench
-conda env create -f environment.yml
+conda env create -f environment.local.yml
 conda activate gta
 pip install -e .
 python -m streamlit run streamlit_app.py
@@ -122,12 +116,4 @@ GTA_DEMO_MODE=1
 
 Demo 模式使用一个合成的 responsible sourcing 示例和预计算结果，不会调用外部 LLM API，也不会运行 WolframScript。
 
-## 生成文件
 
-用户项目、上传论文、日志和生成结果会写入：
-
-```text
-output/
-```
-
-该目录会被 git 忽略。请不要提交 `.env`、真实论文或生成结果。
