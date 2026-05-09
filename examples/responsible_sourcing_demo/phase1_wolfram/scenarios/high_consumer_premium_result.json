@@ -1,0 +1,93 @@
+{
+  "scenario_id": "high_consumer_premium",
+  "status": "success",
+  "failed_at": "",
+  "warnings": [],
+  "managerial_insights": [
+    "responsible sourcing is profitable for the premium segment"
+  ],
+  "stage_results": {
+    "strategy_enumeration": {
+      "solve_type": "enumeration",
+      "chosen_strategy": "responsible_niche",
+      "candidate_strategies": [
+        "low_cost_sourcing",
+        "dual_sourcing",
+        "responsible_niche",
+        "responsible_mass_market"
+      ],
+      "strategy_profiles": [
+        {
+          "strategy": "responsible_niche",
+          "selected": true,
+          "reason": "highest buyer payoff in this precomputed scenario"
+        }
+      ],
+      "pure_nash_conditions": []
+    },
+    "allocation_optimization": {
+      "solve_type": "optimization",
+      "decision_variables": [
+        "xR",
+        "xK"
+      ],
+      "objectives": {
+        "B": "maximize expected buyer payoff over sourcing shares"
+      },
+      "candidate_rules": {
+        "xR": "0.62",
+        "xK": "0.00"
+      }
+    },
+    "pricing_optimization": {
+      "solve_type": "optimization",
+      "decision_variables": [
+        "p"
+      ],
+      "objectives": {
+        "B": "maximize expected buyer payoff over retail price"
+      },
+      "candidate_rules": {
+        "p": "1.58"
+      }
+    },
+    "policy_comparison": {
+      "solve_type": "enumeration",
+      "scenario_axes": {
+        "transparency": "moderate",
+        "consumer_pressure": "high",
+        "enforcement": "moderate"
+      },
+      "responsible_share": "0.62",
+      "risky_share": "0.00",
+      "managerial_insights": [
+        "responsible sourcing is profitable for the premium segment"
+      ],
+      "strategy_profiles": [
+        {
+          "scenario": "high_consumer_premium",
+          "strategy": "responsible_niche",
+          "responsible_share": "0.62",
+          "risky_share": "0.00"
+        }
+      ],
+      "pure_nash_conditions": []
+    }
+  },
+  "equilibrium": {
+    "strategy": "responsible_niche",
+    "p": "1.58",
+    "xR": "0.62",
+    "xK": "0.00"
+  },
+  "subscribed_players": [],
+  "expected_pricing_profits": {
+    "B": "0.176",
+    "RS": "0.096",
+    "KS": "0"
+  },
+  "contract_terms": {},
+  "phase1_options": {
+    "solve_mode": "precomputed-demo"
+  }
+}

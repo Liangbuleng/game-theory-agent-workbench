@@ -1,0 +1,353 @@
+{
+  "procedure": {
+    "method": "stackelberg_backward_induction",
+    "solving_stages": [
+      {
+        "stage_id": "strategy_enumeration",
+        "description": "Enumerate low-cost, dual, responsible-niche, and responsible-mass-market sourcing strategies.",
+        "corresponds_to_decision_stage": 1,
+        "solve_type": "enumeration",
+        "deciders": [
+          {
+            "player_id": "B",
+            "decision_vars": [
+              "s"
+            ],
+            "informed_about": [],
+            "description": null
+          }
+        ],
+        "profit_function_assignments": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ]
+        },
+        "uses_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "uses_contract_terms": [],
+        "expectation_handling": "before_foc",
+        "uses_previous_stage_results": [],
+        "solver_hint": "Evaluate buyer payoff under each candidate sourcing strategy."
+      },
+      {
+        "stage_id": "allocation_optimization",
+        "description": "For each sourcing strategy, choose responsible and risky sourcing shares.",
+        "corresponds_to_decision_stage": 1,
+        "solve_type": "optimization",
+        "deciders": [
+          {
+            "player_id": "B",
+            "decision_vars": [
+              "xR",
+              "xK"
+            ],
+            "informed_about": [],
+            "description": null
+          }
+        ],
+        "profit_function_assignments": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ]
+        },
+        "uses_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "uses_contract_terms": [],
+        "expectation_handling": "before_foc",
+        "uses_previous_stage_results": [
+          "strategy_enumeration"
+        ],
+        "solver_hint": "Optimize allocation subject to xR + xK <= 1 and strategy-specific restrictions."
+      },
+      {
+        "stage_id": "pricing_optimization",
+        "description": "For each candidate strategy, optimize the buyer's retail price.",
+        "corresponds_to_decision_stage": 2,
+        "solve_type": "optimization",
+        "deciders": [
+          {
+            "player_id": "B",
+            "decision_vars": [
+              "p"
+            ],
+            "informed_about": [],
+            "description": null
+          }
+        ],
+        "profit_function_assignments": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ]
+        },
+        "uses_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "uses_contract_terms": [],
+        "expectation_handling": "before_foc",
+        "uses_previous_stage_results": [
+          "strategy_enumeration",
+          "allocation_optimization"
+        ],
+        "solver_hint": "Maximize buyer expected payoff subject to nonnegative demand."
+      },
+      {
+        "stage_id": "policy_comparison",
+        "description": "Compare optimal sourcing strategies and payoffs across policy scenarios.",
+        "corresponds_to_decision_stage": 1,
+        "solve_type": "enumeration",
+        "deciders": [
+          {
+            "player_id": "B",
+            "decision_vars": [
+              "s"
+            ],
+            "informed_about": [],
+            "description": null
+          }
+        ],
+        "profit_function_assignments": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ],
+          "RS": [
+            "responsible_supplier_profit"
+          ],
+          "KS": [
+            "risky_supplier_profit"
+          ]
+        },
+        "uses_demands": [
+          "Dtotal"
+        ],
+        "uses_contract_terms": [],
+        "expectation_handling": "not_needed",
+        "uses_previous_stage_results": [
+          "strategy_enumeration",
+          "allocation_optimization",
+          "pricing_optimization"
+        ],
+        "solver_hint": "Rank scenarios by buyer profit, responsible sourcing share, and risky exposure."
+      }
+    ],
+    "scenario_details": [
+      {
+        "scenario_id": "base_case",
+        "informed_overrides": {},
+        "active_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "active_payoff_components": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ],
+          "RS": [
+            "responsible_supplier_profit"
+          ],
+          "KS": [
+            "risky_supplier_profit"
+          ]
+        },
+        "active_contract_terms": [],
+        "demand_overrides": null,
+        "payoff_overrides": null,
+        "notes": "Precomputed demo scenario."
+      },
+      {
+        "scenario_id": "high_transparency",
+        "informed_overrides": {},
+        "active_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "active_payoff_components": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ],
+          "RS": [
+            "responsible_supplier_profit"
+          ],
+          "KS": [
+            "risky_supplier_profit"
+          ]
+        },
+        "active_contract_terms": [],
+        "demand_overrides": null,
+        "payoff_overrides": null,
+        "notes": "Precomputed demo scenario."
+      },
+      {
+        "scenario_id": "high_consumer_premium",
+        "informed_overrides": {},
+        "active_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "active_payoff_components": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ],
+          "RS": [
+            "responsible_supplier_profit"
+          ],
+          "KS": [
+            "risky_supplier_profit"
+          ]
+        },
+        "active_contract_terms": [],
+        "demand_overrides": null,
+        "payoff_overrides": null,
+        "notes": "Precomputed demo scenario."
+      },
+      {
+        "scenario_id": "large_conscious_segment",
+        "informed_overrides": {},
+        "active_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "active_payoff_components": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ],
+          "RS": [
+            "responsible_supplier_profit"
+          ],
+          "KS": [
+            "risky_supplier_profit"
+          ]
+        },
+        "active_contract_terms": [],
+        "demand_overrides": null,
+        "payoff_overrides": null,
+        "notes": "Precomputed demo scenario."
+      },
+      {
+        "scenario_id": "strong_penalty",
+        "informed_overrides": {},
+        "active_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "active_payoff_components": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ],
+          "RS": [
+            "responsible_supplier_profit"
+          ],
+          "KS": [
+            "risky_supplier_profit"
+          ]
+        },
+        "active_contract_terms": [],
+        "demand_overrides": null,
+        "payoff_overrides": null,
+        "notes": "Precomputed demo scenario."
+      },
+      {
+        "scenario_id": "high_responsible_cost",
+        "informed_overrides": {},
+        "active_demands": [
+          "Dregular",
+          "Dconscious",
+          "Dtotal"
+        ],
+        "active_payoff_components": {
+          "B": [
+            "buyer_margin",
+            "expected_penalty"
+          ],
+          "RS": [
+            "responsible_supplier_profit"
+          ],
+          "KS": [
+            "risky_supplier_profit"
+          ]
+        },
+        "active_contract_terms": [],
+        "demand_overrides": null,
+        "payoff_overrides": null,
+        "notes": "Precomputed demo scenario."
+      }
+    ],
+    "refinement": "Buyer selects the profit-maximizing feasible sourcing strategy.",
+    "description": "Enumerate sourcing strategies, optimize price/allocation, then compare buyer payoffs across scenarios."
+  },
+  "research_questions": [
+    {
+      "id": "rq_strategy",
+      "question": "When does the buyer choose responsible sourcing rather than risky low-cost sourcing?",
+      "question_type": "optimal_choice",
+      "target_scenarios": [
+        "base_case",
+        "high_transparency",
+        "high_consumer_premium",
+        "large_conscious_segment",
+        "strong_penalty",
+        "high_responsible_cost"
+      ],
+      "target_players": [
+        "B"
+      ],
+      "target_metrics": [
+        "chosen_strategy"
+      ],
+      "description": null
+    },
+    {
+      "id": "rq_policy",
+      "question": "Do transparency, consumer pressure, or penalties most reliably increase responsible sourcing?",
+      "question_type": "comparative_statics",
+      "target_scenarios": [
+        "base_case",
+        "high_transparency",
+        "high_consumer_premium",
+        "large_conscious_segment",
+        "strong_penalty",
+        "high_responsible_cost"
+      ],
+      "target_players": [
+        "B"
+      ],
+      "target_metrics": [
+        "xR",
+        "xK",
+        "expected_pricing_profits"
+      ],
+      "description": null
+    }
+  ],
+  "basics_revision_suggestions": [],
+  "clarification_questions": [],
+  "field_confidence": [
+    {
+      "field_path": "procedure.solving_stages",
+      "confidence": "inferred",
+      "source_quote": null,
+      "note": "The demo uses a simplified enumeration and optimization workflow."
+    }
+  ]
+}

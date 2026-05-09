@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import time
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,34 @@ from agent.schemas import ModelSpec
 
 
 PROJECTS_ROOT = Path("output/streamlit_projects")
+DEMO_PROJECT_NAME = "responsible_sourcing_demo"
+DEMO_SOURCE_ROOT = Path("examples") / DEMO_PROJECT_NAME
+
+DEMO_STEPS: dict[str, list[tuple[str, str]]] = {
+    "seed": [("paper", "paper")],
+    "stage1_parse": [("stage1_output_v1.json", "stage1_output_v1.json")],
+    "stage1_confirm": [("stage1_final.json", "stage1_final.json")],
+    "stage2_parse": [("stage2_output_v1.json", "stage2_output_v1.json")],
+    "stage2_confirm": [("stage2_final.json", "stage2_final.json")],
+    "finalize": [
+        ("modelspec_final.yaml", "modelspec_final.yaml"),
+        ("modelspec_final.json", "modelspec_final.json"),
+    ],
+    "phase1_generate": [
+        ("phase1_wolfram/manifest.json", "phase1_wolfram/manifest.json"),
+        ("phase1_wolfram/README.md", "phase1_wolfram/README.md"),
+        ("phase1_wolfram/run_all.wl", "phase1_wolfram/run_all.wl"),
+        ("phase1_wolfram/scenarios", "phase1_wolfram/scenarios"),
+    ],
+    "phase15_run": [
+        ("phase1_wolfram/all_results.json", "phase1_wolfram/all_results.json"),
+        ("phase1_wolfram/mechanism_summaries.json", "phase1_wolfram/mechanism_summaries.json"),
+        ("phase1_wolfram/phase1_diagnostics.json", "phase1_wolfram/phase1_diagnostics.json"),
+        ("phase1_wolfram/phase1_report.md", "phase1_wolfram/phase1_report.md"),
+        ("phase1_wolfram/run_logs", "phase1_wolfram/run_logs"),
+        ("phase1_wolfram/run_summary.json", "phase1_wolfram/run_summary.json"),
+    ],
+}
 
 
 def main() -> None:
@@ -35,6 +64,9 @@ def main() -> None:
     _init_state()
     st.title("Game Theory Agent Workbench")
     st.caption("Phase 0 parsing, review, finalize, and Phase 1 Wolfram execution.")
+
+    if _demo_mode():
+        _ensure_demo_project_seed()
 
     project_dir = _sidebar()
     if project_dir is None:
@@ -49,16 +81,18 @@ def main() -> None:
     if paper_path.exists():
         st.write(f"**Paper**: `{paper_path}`")
 
-    tabs = st.tabs(["Project", "Stage 1", "Stage 2", "Finalize", "Phase 1"])
+    tabs = st.tabs(["Guide", "Project", "Stage 1", "Stage 2", "Finalize", "Phase 1"])
     with tabs[0]:
-        _render_project_tab(project_dir, paper_path)
+        _render_guide_tab()
     with tabs[1]:
-        _render_stage1_tab(project_dir, paper_path)
+        _render_project_tab(project_dir, paper_path)
     with tabs[2]:
-        _render_stage2_tab(project_dir, paper_path)
+        _render_stage1_tab(project_dir, paper_path)
     with tabs[3]:
-        _render_finalize_tab(project_dir)
+        _render_stage2_tab(project_dir, paper_path)
     with tabs[4]:
+        _render_finalize_tab(project_dir)
+    with tabs[5]:
         _render_phase1_tab(project_dir)
 
 
@@ -89,6 +123,20 @@ def _init_state() -> None:
 
 def _sidebar() -> Path | None:
     st.sidebar.header("Project")
+    if _demo_mode():
+        st.sidebar.info("Demo Mode: precomputed walkthrough")
+        st.sidebar.selectbox("Open project", [DEMO_PROJECT_NAME], disabled=True)
+        st.sidebar.text_input("New project name", value="", disabled=True)
+        st.sidebar.selectbox("LLM provider", ["demo-precomputed"], disabled=True)
+        st.sidebar.checkbox("LLM streaming", value=False, disabled=True)
+        st.sidebar.checkbox("LLM logging", value=False, disabled=True)
+        st.session_state.current_project = DEMO_PROJECT_NAME
+        st.session_state.provider_name = "demo-precomputed"
+        st.session_state.llm_stream = False
+        st.session_state.llm_log = False
+        _reset_project_buffers_if_needed(DEMO_PROJECT_NAME)
+        return PROJECTS_ROOT / DEMO_PROJECT_NAME
+
     existing = sorted(
         [path for path in PROJECTS_ROOT.iterdir() if path.is_dir()],
         key=lambda path: path.name.lower(),
@@ -140,6 +188,38 @@ def _sidebar() -> Path | None:
     return PROJECTS_ROOT / selected
 
 
+def _render_guide_tab() -> None:
+    st.subheader("Guide")
+    if _demo_mode():
+        st.info(
+            "This online demo follows the same workflow as the full app. "
+            "Run buttons load precomputed results instead of calling an LLM or WolframScript."
+        )
+    else:
+        st.write(
+            "Follow the tabs from left to right to extract, review, finalize, "
+            "and solve a game-theoretic model."
+        )
+
+    st.markdown(
+        """
+### Workflow
+
+1. **Project**: create or open a project and upload a paper/model document.
+2. **Stage 1**: extract players, decisions, parameters, timing, information, payoffs, and scenarios.
+3. **Stage 2**: extract the solving procedure and scenario-specific solving details.
+4. **Finalize**: combine Stage 1 and Stage 2 into a `ModelSpec`.
+5. **Phase 1**: generate Wolfram scripts and inspect equilibrium/payoff reports.
+
+### Demo Mode
+
+The demo uses a synthetic responsible-sourcing game. It does not upload the
+original reference paper, does not call external LLM APIs, and does not run
+WolframScript. Click the main workflow buttons to reveal each precomputed step.
+        """.strip()
+    )
+
+
 def _render_project_tab(project_dir: Path, paper_path: Path) -> None:
     st.subheader("Paper")
     uploaded = st.file_uploader(
@@ -183,6 +263,10 @@ def _render_stage1_tab(project_dir: Path, paper_path: Path) -> None:
     )
 
     if st.button("Run Stage 1 parse", key="run_stage1"):
+        if _demo_mode():
+            _apply_demo_step(project_dir, "stage1_parse")
+            st.success("Demo Stage 1 result loaded.")
+            st.rerun()
         start = time.perf_counter()
         with st.status("Stage 1 parse is running...", expanded=True) as status:
             st.write(f"Provider: `{st.session_state.provider_name or 'default'}`")
@@ -244,6 +328,9 @@ def _render_stage1_tab(project_dir: Path, paper_path: Path) -> None:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Apply Stage 1 JSONC revision", key="apply_stage1_jsonc"):
+            if _demo_mode():
+                st.info("JSONC revision is disabled in demo mode. Run locally to edit and revise outputs.")
+                return
             parser = _build_parser(project_dir)
             revised = parser.stage1_revise_from_json(
                 st.session_state.stage1_review_jsonc,
@@ -260,6 +347,10 @@ def _render_stage1_tab(project_dir: Path, paper_path: Path) -> None:
             st.rerun()
     with col2:
         if st.button("Confirm Stage 1", key="confirm_stage1"):
+            if _demo_mode():
+                _apply_demo_step(project_dir, "stage1_confirm")
+                st.success("Demo Stage 1 confirmed.")
+                st.rerun()
             parser = _build_parser(project_dir)
             parser.confirm_stage1(stage1, output_dir=project_dir)
             st.success("Stage 1 confirmed.")
@@ -279,6 +370,9 @@ def _render_stage1_tab(project_dir: Path, paper_path: Path) -> None:
         key="stage1_feedback_text_editor",
     )
     if st.button("Run Stage 1 feedback revision", key="run_stage1_feedback"):
+        if _demo_mode():
+            st.info("Feedback revision is disabled in demo mode. Run locally to call LLM revisions.")
+            return
         parser = _build_parser(project_dir)
         revised = parser.stage1_revise_from_feedback(
             previous=stage1,
@@ -310,6 +404,10 @@ def _render_stage2_tab(project_dir: Path, paper_path: Path) -> None:
         return
 
     if st.button("Run Stage 2 parse", key="run_stage2"):
+        if _demo_mode():
+            _apply_demo_step(project_dir, "stage2_parse")
+            st.success("Demo Stage 2 result loaded.")
+            st.rerun()
         start = time.perf_counter()
         with st.status("Stage 2 parse is running...", expanded=True) as status:
             st.write(f"Provider: `{st.session_state.provider_name or 'default'}`")
@@ -370,6 +468,9 @@ def _render_stage2_tab(project_dir: Path, paper_path: Path) -> None:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Apply Stage 2 JSONC revision", key="apply_stage2_jsonc"):
+            if _demo_mode():
+                st.info("JSONC revision is disabled in demo mode. Run locally to edit and revise outputs.")
+                return
             parser = _build_parser(project_dir)
             revised = parser.stage2_revise_from_json(
                 st.session_state.stage2_review_jsonc,
@@ -387,6 +488,10 @@ def _render_stage2_tab(project_dir: Path, paper_path: Path) -> None:
             st.rerun()
     with col2:
         if st.button("Confirm Stage 2", key="confirm_stage2"):
+            if _demo_mode():
+                _apply_demo_step(project_dir, "stage2_confirm")
+                st.success("Demo Stage 2 confirmed.")
+                st.rerun()
             parser = _build_parser(project_dir)
             parser.confirm_stage2(stage2, basics=stage1.basics, output_dir=project_dir)
             st.success("Stage 2 confirmed.")
@@ -406,6 +511,9 @@ def _render_stage2_tab(project_dir: Path, paper_path: Path) -> None:
         key="stage2_feedback_text_editor",
     )
     if st.button("Run Stage 2 feedback revision", key="run_stage2_feedback"):
+        if _demo_mode():
+            st.info("Feedback revision is disabled in demo mode. Run locally to call LLM revisions.")
+            return
         parser = _build_parser(project_dir)
         revised = parser.stage2_revise_from_feedback(
             previous=stage2,
@@ -439,6 +547,10 @@ def _render_finalize_tab(project_dir: Path) -> None:
         return
 
     if st.button("Finalize ModelSpec", key="finalize_modelspec"):
+        if _demo_mode():
+            _apply_demo_step(project_dir, "finalize")
+            st.success("Demo ModelSpec finalized.")
+            st.rerun()
         parser = _build_parser(project_dir)
         spec = parser.finalize(
             stage1,
@@ -494,6 +606,10 @@ def _render_phase1_tab(project_dir: Path) -> None:
     phase1_dir = project_dir / "phase1_wolfram"
 
     if st.button("Generate Wolfram scripts", key="generate_phase1"):
+        if _demo_mode():
+            _apply_demo_step(project_dir, "phase1_generate")
+            st.success("Demo Wolfram scripts loaded.")
+            st.rerun()
         options = WolframGenerationOptions(
             solve_timeout_seconds=int(st.session_state.phase1_generate_timeout),
             simplify_timeout_seconds=int(st.session_state.phase1_simplify_timeout),
@@ -521,6 +637,10 @@ def _render_phase1_tab(project_dir: Path) -> None:
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Run Phase 1.5", key="run_phase15"):
+            if _demo_mode():
+                _apply_demo_step(project_dir, "phase15_run")
+                st.success("Demo Phase 1.5 results loaded.")
+                st.rerun()
             start = time.perf_counter()
             manifest = _load_phase1_manifest_for_ui(phase1_dir)
             scenario_count = len(manifest.get("scenarios", [])) if manifest else 0
@@ -561,6 +681,9 @@ def _render_phase1_tab(project_dir: Path) -> None:
             st.rerun()
     with col2:
         if st.button("Diagnose existing results", key="diagnose_phase15"):
+            if _demo_mode():
+                st.info("Diagnostics refresh is disabled in demo mode. Precomputed diagnostics are loaded with Phase 1.5.")
+                return
             diagnostics = write_phase1_diagnostics(phase1_dir)
             st.success(f"Diagnostics refreshed: {diagnostics.counts}")
             st.rerun()
@@ -605,6 +728,43 @@ def _render_llm_log_tail(project_dir: Path, *, max_lines: int = 80) -> None:
         return
     st.subheader("Recent LLM log")
     st.code("\n".join(lines[-max_lines:]), language="text")
+
+
+class _NullLLMClient:
+    """Placeholder used only for JSONC export in demo mode."""
+
+    provider_config = None
+
+
+def _demo_mode() -> bool:
+    value = os.environ.get("GTA_DEMO_MODE", "")
+    return value.lower() in {"1", "true", "yes", "on"}
+
+
+def _ensure_demo_project_seed() -> None:
+    target = PROJECTS_ROOT / DEMO_PROJECT_NAME
+    if target.exists():
+        return
+    _apply_demo_step(target, "seed")
+
+
+def _apply_demo_step(project_dir: Path, step: str) -> None:
+    if step not in DEMO_STEPS:
+        raise ValueError(f"Unknown demo step: {step}")
+    if not DEMO_SOURCE_ROOT.exists():
+        raise FileNotFoundError(f"Missing demo source directory: {DEMO_SOURCE_ROOT}")
+    for source_rel, target_rel in DEMO_STEPS[step]:
+        source = DEMO_SOURCE_ROOT / source_rel
+        target = project_dir / target_rel
+        if not source.exists():
+            raise FileNotFoundError(f"Missing demo artifact: {source}")
+        if source.is_dir():
+            if target.exists():
+                shutil.rmtree(target)
+            shutil.copytree(source, target)
+        else:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
 
 
 def _provider_names() -> list[str]:
@@ -672,11 +832,11 @@ def _artifact_paths(project_dir: Path) -> dict[str, Path]:
 def _hydrate_project_state(project_dir: Path) -> None:
     stage1 = _load_stage1(project_dir)
     if stage1 is not None and not st.session_state.stage1_review_jsonc:
-        parser = _build_parser(project_dir)
+        parser = Parser(llm_client=_NullLLMClient(), auto_save=False) if _demo_mode() else _build_parser(project_dir)
         st.session_state.stage1_review_jsonc = str(parser.export_stage1_review_jsonc(stage1))
     stage2 = _load_stage2(project_dir)
     if stage2 is not None and not st.session_state.stage2_review_jsonc:
-        parser = _build_parser(project_dir)
+        parser = Parser(llm_client=_NullLLMClient(), auto_save=False) if _demo_mode() else _build_parser(project_dir)
         st.session_state.stage2_review_jsonc = str(parser.export_stage2_review_jsonc(stage2))
 
 

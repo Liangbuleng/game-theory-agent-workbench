@@ -1,0 +1,93 @@
+{
+  "scenario_id": "high_transparency",
+  "status": "success",
+  "failed_at": "",
+  "warnings": [],
+  "managerial_insights": [
+    "risk-sensitive consumers discipline risky sourcing"
+  ],
+  "stage_results": {
+    "strategy_enumeration": {
+      "solve_type": "enumeration",
+      "chosen_strategy": "responsible_mass_market",
+      "candidate_strategies": [
+        "low_cost_sourcing",
+        "dual_sourcing",
+        "responsible_niche",
+        "responsible_mass_market"
+      ],
+      "strategy_profiles": [
+        {
+          "strategy": "responsible_mass_market",
+          "selected": true,
+          "reason": "highest buyer payoff in this precomputed scenario"
+        }
+      ],
+      "pure_nash_conditions": []
+    },
+    "allocation_optimization": {
+      "solve_type": "optimization",
+      "decision_variables": [
+        "xR",
+        "xK"
+      ],
+      "objectives": {
+        "B": "maximize expected buyer payoff over sourcing shares"
+      },
+      "candidate_rules": {
+        "xR": "1.00",
+        "xK": "0.00"
+      }
+    },
+    "pricing_optimization": {
+      "solve_type": "optimization",
+      "decision_variables": [
+        "p"
+      ],
+      "objectives": {
+        "B": "maximize expected buyer payoff over retail price"
+      },
+      "candidate_rules": {
+        "p": "1.44"
+      }
+    },
+    "policy_comparison": {
+      "solve_type": "enumeration",
+      "scenario_axes": {
+        "transparency": "high",
+        "consumer_pressure": "moderate",
+        "enforcement": "moderate"
+      },
+      "responsible_share": "1.00",
+      "risky_share": "0.00",
+      "managerial_insights": [
+        "risk-sensitive consumers discipline risky sourcing"
+      ],
+      "strategy_profiles": [
+        {
+          "scenario": "high_transparency",
+          "strategy": "responsible_mass_market",
+          "responsible_share": "1.00",
+          "risky_share": "0.00"
+        }
+      ],
+      "pure_nash_conditions": []
+    }
+  },
+  "equilibrium": {
+    "strategy": "responsible_mass_market",
+    "p": "1.44",
+    "xR": "1.00",
+    "xK": "0.00"
+  },
+  "subscribed_players": [],
+  "expected_pricing_profits": {
+    "B": "0.201",
+    "RS": "0.118",
+    "KS": "0"
+  },
+  "contract_terms": {},
+  "phase1_options": {
+    "solve_mode": "precomputed-demo"
+  }
+}

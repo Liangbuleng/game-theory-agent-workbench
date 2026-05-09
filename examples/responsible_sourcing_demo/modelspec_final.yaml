@@ -1,0 +1,543 @@
+basics:
+  title: Synthetic Responsible Sourcing Game
+  source: examples/responsible_sourcing_demo/paper/demo_model.md
+  game_type: stackelberg
+  unsupported_reason: null
+  players:
+  - id: B
+    name: Buyer
+    role: leader
+    description: Chooses sourcing strategy and price.
+  - id: RS
+    name: Responsible Supplier
+    role: follower
+    description: Higher-cost supplier with audited responsible practices.
+  - id: KS
+    name: Risky Supplier
+    role: follower
+    description: Lower-cost supplier exposed to responsibility violations.
+  - id: C
+    name: Consumers
+    role: unspecified
+    description: Regular and socially conscious demand segments.
+  decision_variables:
+  - name: s
+    owner: B
+    domain: Discrete
+    custom_domain: '{LC, DS, RN, RM}'
+    description: Buyer sourcing strategy.
+  - name: p
+    owner: B
+    domain: Positive
+    custom_domain: null
+    description: Retail price.
+  - name: xR
+    owner: B
+    domain: UnitInterval
+    custom_domain: null
+    description: Demand share sourced responsibly.
+  - name: xK
+    owner: B
+    domain: UnitInterval
+    custom_domain: null
+    description: Demand share sourced from the risky supplier.
+  parameters:
+  - name: a
+    domain: Positive
+    custom_domain: null
+    fixed_value: null
+    description: Base market size.
+  - name: b
+    domain: Positive
+    custom_domain: null
+    fixed_value: null
+    description: Price sensitivity.
+  - name: lambda
+    domain: UnitInterval
+    custom_domain: null
+    fixed_value: null
+    description: Share of socially conscious consumers.
+  - name: v
+    domain: Positive
+    custom_domain: null
+    fixed_value: null
+    description: Responsibility premium among conscious consumers.
+  - name: cR
+    domain: Positive
+    custom_domain: null
+    fixed_value: null
+    description: Responsible supplier unit cost.
+  - name: cK
+    domain: Positive
+    custom_domain: null
+    fixed_value: null
+    description: Risky supplier unit cost.
+  - name: rho
+    domain: UnitInterval
+    custom_domain: null
+    fixed_value: null
+    description: Violation probability for risky sourcing.
+  - name: tau
+    domain: UnitInterval
+    custom_domain: null
+    fixed_value: null
+    description: Transparency level.
+  - name: F
+    domain: NonNegative
+    custom_domain: null
+    fixed_value: null
+    description: Buyer penalty if a violation is detected.
+  parameter_constraints:
+  - expression: a > 0 && b > 0 && cR > cK > 0
+    description: Responsible supply is more costly.
+    source: null
+  - expression: 0 <= lambda <= 1 && 0 <= rho <= 1 && 0 <= tau <= 1
+    description: Probabilities and shares are bounded.
+    source: null
+  information_structure:
+    random_variables:
+    - name: violation
+      realizations:
+      - value: '0'
+        probability: 1 - rho
+        description: null
+      - value: '1'
+        probability: rho
+        description: null
+      description: Whether risky sourcing suffers a responsibility violation.
+    access:
+    - player_id: B
+      knows:
+      - violation
+      when: in expectation before sourcing
+      decision_stage: null
+      description: The buyer knows the violation distribution, not the realization.
+    action_observability:
+    - observer: C
+      observed_player: B
+      observed_decision_vars:
+      - s
+      - p
+      when: before purchase
+      description: null
+  decision_timing:
+    stages:
+    - stage_number: 1
+      description: Buyer selects sourcing strategy and supplier allocation.
+      decisions:
+      - decider: B
+        decision_vars:
+        - s
+        - xR
+        - xK
+        simultaneous_with: []
+        move_order: 1
+        observes_before_deciding: []
+        decision_role: mechanism_design
+        description: null
+    - stage_number: 2
+      description: Buyer sets retail price after choosing the sourcing posture.
+      decisions:
+      - decider: B
+        decision_vars:
+        - p
+        simultaneous_with: []
+        move_order: 1
+        observes_before_deciding:
+        - s
+        - xR
+        - xK
+        decision_role: pricing
+        description: null
+  demands:
+  - name: Dregular
+    expression:
+      formula: (1 - lambda) * Max[a - b*p, 0]
+      description: null
+    applies_when: null
+    description: Regular consumer demand.
+  - name: Dconscious
+    expression:
+      formula: lambda * Max[a + v*xR - tau*rho*xK - b*p, 0]
+      description: null
+    applies_when: null
+    description: Socially conscious demand adjusted for responsibility and visible
+      risk.
+  - name: Dtotal
+    expression:
+      formula: Dregular + Dconscious
+      description: null
+    applies_when: null
+    description: Total demand.
+  payoff_components:
+  - id: buyer_margin
+    player_id: B
+    expression:
+      formula: (p - cR*xR - cK*xK) * Dtotal
+      description: null
+    component_type: profit
+    applies_to_decision_stage: 2
+    applies_when: null
+    description: null
+  - id: expected_penalty
+    player_id: B
+    expression:
+      formula: -F * tau * rho * xK
+      description: null
+    component_type: cost
+    applies_to_decision_stage: 1
+    applies_when: null
+    description: null
+  - id: responsible_supplier_profit
+    player_id: RS
+    expression:
+      formula: cR * xR * Dtotal
+      description: null
+    component_type: revenue
+    applies_to_decision_stage: null
+    applies_when: null
+    description: null
+  - id: risky_supplier_profit
+    player_id: KS
+    expression:
+      formula: cK * xK * Dtotal
+      description: null
+    component_type: revenue
+    applies_to_decision_stage: null
+    applies_when: null
+    description: null
+  contract_terms: []
+  scenario_axes:
+  - id: transparency
+    description: null
+    values:
+    - id: low
+      description: null
+    - id: moderate
+      description: null
+    - id: high
+      description: null
+  - id: consumer_pressure
+    description: null
+    values:
+    - id: moderate
+      description: null
+    - id: high
+      description: null
+    - id: large_segment
+      description: null
+  - id: enforcement
+    description: null
+    values:
+    - id: weak
+      description: null
+    - id: moderate
+      description: null
+    - id: strong
+      description: null
+  scenario_overview:
+  - id: base_case
+    description: moderate transparency, moderate responsible cost, and moderate buyer
+      penalty
+    axis_values:
+      transparency: moderate
+      consumer_pressure: moderate
+      enforcement: moderate
+  - id: high_transparency
+    description: high transparency makes responsibility violations visible to consumers
+    axis_values:
+      transparency: high
+      consumer_pressure: moderate
+      enforcement: moderate
+  - id: high_consumer_premium
+    description: socially conscious consumers have a high willingness to pay for responsibility
+    axis_values:
+      transparency: moderate
+      consumer_pressure: high
+      enforcement: moderate
+  - id: large_conscious_segment
+    description: the socially conscious segment is large enough to affect mass-market
+      design
+    axis_values:
+      transparency: moderate
+      consumer_pressure: large_segment
+      enforcement: moderate
+  - id: strong_penalty
+    description: a regulator imposes a strong penalty on buyer responsibility violations
+    axis_values:
+      transparency: moderate
+      consumer_pressure: moderate
+      enforcement: strong
+  - id: high_responsible_cost
+    description: responsible supplier cost is high and enforcement is weak
+    axis_values:
+      transparency: low
+      consumer_pressure: moderate
+      enforcement: weak
+procedure:
+  method: stackelberg_backward_induction
+  solving_stages:
+  - stage_id: strategy_enumeration
+    description: Enumerate low-cost, dual, responsible-niche, and responsible-mass-market
+      sourcing strategies.
+    corresponds_to_decision_stage: 1
+    solve_type: enumeration
+    deciders:
+    - player_id: B
+      decision_vars:
+      - s
+      informed_about: []
+      description: null
+    profit_function_assignments:
+      B:
+      - buyer_margin
+      - expected_penalty
+    uses_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    uses_contract_terms: []
+    expectation_handling: before_foc
+    uses_previous_stage_results: []
+    solver_hint: Evaluate buyer payoff under each candidate sourcing strategy.
+  - stage_id: allocation_optimization
+    description: For each sourcing strategy, choose responsible and risky sourcing
+      shares.
+    corresponds_to_decision_stage: 1
+    solve_type: optimization
+    deciders:
+    - player_id: B
+      decision_vars:
+      - xR
+      - xK
+      informed_about: []
+      description: null
+    profit_function_assignments:
+      B:
+      - buyer_margin
+      - expected_penalty
+    uses_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    uses_contract_terms: []
+    expectation_handling: before_foc
+    uses_previous_stage_results:
+    - strategy_enumeration
+    solver_hint: Optimize allocation subject to xR + xK <= 1 and strategy-specific
+      restrictions.
+  - stage_id: pricing_optimization
+    description: For each candidate strategy, optimize the buyer's retail price.
+    corresponds_to_decision_stage: 2
+    solve_type: optimization
+    deciders:
+    - player_id: B
+      decision_vars:
+      - p
+      informed_about: []
+      description: null
+    profit_function_assignments:
+      B:
+      - buyer_margin
+      - expected_penalty
+    uses_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    uses_contract_terms: []
+    expectation_handling: before_foc
+    uses_previous_stage_results:
+    - strategy_enumeration
+    - allocation_optimization
+    solver_hint: Maximize buyer expected payoff subject to nonnegative demand.
+  - stage_id: policy_comparison
+    description: Compare optimal sourcing strategies and payoffs across policy scenarios.
+    corresponds_to_decision_stage: 1
+    solve_type: enumeration
+    deciders:
+    - player_id: B
+      decision_vars:
+      - s
+      informed_about: []
+      description: null
+    profit_function_assignments:
+      B:
+      - buyer_margin
+      - expected_penalty
+      RS:
+      - responsible_supplier_profit
+      KS:
+      - risky_supplier_profit
+    uses_demands:
+    - Dtotal
+    uses_contract_terms: []
+    expectation_handling: not_needed
+    uses_previous_stage_results:
+    - strategy_enumeration
+    - allocation_optimization
+    - pricing_optimization
+    solver_hint: Rank scenarios by buyer profit, responsible sourcing share, and risky
+      exposure.
+  scenario_details:
+  - scenario_id: base_case
+    informed_overrides: {}
+    active_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    active_payoff_components:
+      B:
+      - buyer_margin
+      - expected_penalty
+      RS:
+      - responsible_supplier_profit
+      KS:
+      - risky_supplier_profit
+    active_contract_terms: []
+    demand_overrides: null
+    payoff_overrides: null
+    notes: Precomputed demo scenario.
+  - scenario_id: high_transparency
+    informed_overrides: {}
+    active_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    active_payoff_components:
+      B:
+      - buyer_margin
+      - expected_penalty
+      RS:
+      - responsible_supplier_profit
+      KS:
+      - risky_supplier_profit
+    active_contract_terms: []
+    demand_overrides: null
+    payoff_overrides: null
+    notes: Precomputed demo scenario.
+  - scenario_id: high_consumer_premium
+    informed_overrides: {}
+    active_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    active_payoff_components:
+      B:
+      - buyer_margin
+      - expected_penalty
+      RS:
+      - responsible_supplier_profit
+      KS:
+      - risky_supplier_profit
+    active_contract_terms: []
+    demand_overrides: null
+    payoff_overrides: null
+    notes: Precomputed demo scenario.
+  - scenario_id: large_conscious_segment
+    informed_overrides: {}
+    active_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    active_payoff_components:
+      B:
+      - buyer_margin
+      - expected_penalty
+      RS:
+      - responsible_supplier_profit
+      KS:
+      - risky_supplier_profit
+    active_contract_terms: []
+    demand_overrides: null
+    payoff_overrides: null
+    notes: Precomputed demo scenario.
+  - scenario_id: strong_penalty
+    informed_overrides: {}
+    active_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    active_payoff_components:
+      B:
+      - buyer_margin
+      - expected_penalty
+      RS:
+      - responsible_supplier_profit
+      KS:
+      - risky_supplier_profit
+    active_contract_terms: []
+    demand_overrides: null
+    payoff_overrides: null
+    notes: Precomputed demo scenario.
+  - scenario_id: high_responsible_cost
+    informed_overrides: {}
+    active_demands:
+    - Dregular
+    - Dconscious
+    - Dtotal
+    active_payoff_components:
+      B:
+      - buyer_margin
+      - expected_penalty
+      RS:
+      - responsible_supplier_profit
+      KS:
+      - risky_supplier_profit
+    active_contract_terms: []
+    demand_overrides: null
+    payoff_overrides: null
+    notes: Precomputed demo scenario.
+  refinement: Buyer selects the profit-maximizing feasible sourcing strategy.
+  description: Enumerate sourcing strategies, optimize price/allocation, then compare
+    buyer payoffs across scenarios.
+research_questions:
+- id: rq_strategy
+  question: When does the buyer choose responsible sourcing rather than risky low-cost
+    sourcing?
+  question_type: optimal_choice
+  target_scenarios:
+  - base_case
+  - high_transparency
+  - high_consumer_premium
+  - large_conscious_segment
+  - strong_penalty
+  - high_responsible_cost
+  target_players:
+  - B
+  target_metrics:
+  - chosen_strategy
+  description: null
+- id: rq_policy
+  question: Do transparency, consumer pressure, or penalties most reliably increase
+    responsible sourcing?
+  question_type: comparative_statics
+  target_scenarios:
+  - base_case
+  - high_transparency
+  - high_consumer_premium
+  - large_conscious_segment
+  - strong_penalty
+  - high_responsible_cost
+  target_players:
+  - B
+  target_metrics:
+  - xR
+  - xK
+  - expected_pricing_profits
+  description: null
+meta:
+  implicit_assumptions:
+  - This is a synthetic demo inspired by responsible-sourcing problems, not a reproduction
+    of a copyrighted paper.
+  - Suppliers are represented through sourcing costs and payoff accounting rather
+    than separate strategic decisions.
+  field_confidence:
+  - field_path: basics.game_type
+    confidence: inferred
+    source_quote: null
+    note: The demo abstracts the sourcing decision as a Stackelberg-style buyer optimization.
+  - field_path: procedure.solving_stages
+    confidence: inferred
+    source_quote: null
+    note: The demo uses a simplified enumeration and optimization workflow.
+  version: modelspec-v1

@@ -1,0 +1,93 @@
+{
+  "scenario_id": "high_responsible_cost",
+  "status": "success",
+  "failed_at": "",
+  "warnings": [],
+  "managerial_insights": [
+    "low-cost risky supply dominates when responsibility is expensive"
+  ],
+  "stage_results": {
+    "strategy_enumeration": {
+      "solve_type": "enumeration",
+      "chosen_strategy": "low_cost_sourcing",
+      "candidate_strategies": [
+        "low_cost_sourcing",
+        "dual_sourcing",
+        "responsible_niche",
+        "responsible_mass_market"
+      ],
+      "strategy_profiles": [
+        {
+          "strategy": "low_cost_sourcing",
+          "selected": true,
+          "reason": "highest buyer payoff in this precomputed scenario"
+        }
+      ],
+      "pure_nash_conditions": []
+    },
+    "allocation_optimization": {
+      "solve_type": "optimization",
+      "decision_variables": [
+        "xR",
+        "xK"
+      ],
+      "objectives": {
+        "B": "maximize expected buyer payoff over sourcing shares"
+      },
+      "candidate_rules": {
+        "xR": "0.00",
+        "xK": "1.00"
+      }
+    },
+    "pricing_optimization": {
+      "solve_type": "optimization",
+      "decision_variables": [
+        "p"
+      ],
+      "objectives": {
+        "B": "maximize expected buyer payoff over retail price"
+      },
+      "candidate_rules": {
+        "p": "1.08"
+      }
+    },
+    "policy_comparison": {
+      "solve_type": "enumeration",
+      "scenario_axes": {
+        "transparency": "low",
+        "consumer_pressure": "moderate",
+        "enforcement": "weak"
+      },
+      "responsible_share": "0.00",
+      "risky_share": "1.00",
+      "managerial_insights": [
+        "low-cost risky supply dominates when responsibility is expensive"
+      ],
+      "strategy_profiles": [
+        {
+          "scenario": "high_responsible_cost",
+          "strategy": "low_cost_sourcing",
+          "responsible_share": "0.00",
+          "risky_share": "1.00"
+        }
+      ],
+      "pure_nash_conditions": []
+    }
+  },
+  "equilibrium": {
+    "strategy": "low_cost_sourcing",
+    "p": "1.08",
+    "xR": "0.00",
+    "xK": "1.00"
+  },
+  "subscribed_players": [],
+  "expected_pricing_profits": {
+    "B": "0.167",
+    "RS": "0",
+    "KS": "0.083"
+  },
+  "contract_terms": {},
+  "phase1_options": {
+    "solve_mode": "precomputed-demo"
+  }
+}

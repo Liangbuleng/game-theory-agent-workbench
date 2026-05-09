@@ -1,0 +1,216 @@
+{
+  "generated_at": "2026-05-09T07:26:09.263509+00:00",
+  "output_dir": "C:\\Users\\Lenovo\\Desktop\\game theory agent\\game_theory_agent\\examples\\responsible_sourcing_demo\\phase1_wolfram",
+  "manifest": {
+    "generator": "precomputed-demo-v1",
+    "title": "Synthetic Responsible Sourcing Game",
+    "method": "stackelberg_backward_induction",
+    "options": {
+      "solve_mode": "precomputed",
+      "solve_timeout_seconds": 0,
+      "simplify_timeout_seconds": 0
+    },
+    "scenario_count": 6,
+    "scenarios": [
+      {
+        "scenario_id": "base_case",
+        "script": "scenarios/base_case.wl",
+        "result": "scenarios/base_case_result.json"
+      },
+      {
+        "scenario_id": "high_transparency",
+        "script": "scenarios/high_transparency.wl",
+        "result": "scenarios/high_transparency_result.json"
+      },
+      {
+        "scenario_id": "high_consumer_premium",
+        "script": "scenarios/high_consumer_premium.wl",
+        "result": "scenarios/high_consumer_premium_result.json"
+      },
+      {
+        "scenario_id": "large_conscious_segment",
+        "script": "scenarios/large_conscious_segment.wl",
+        "result": "scenarios/large_conscious_segment_result.json"
+      },
+      {
+        "scenario_id": "strong_penalty",
+        "script": "scenarios/strong_penalty.wl",
+        "result": "scenarios/strong_penalty_result.json"
+      },
+      {
+        "scenario_id": "high_responsible_cost",
+        "script": "scenarios/high_responsible_cost.wl",
+        "result": "scenarios/high_responsible_cost_result.json"
+      }
+    ],
+    "run_all": "run_all.wl"
+  },
+  "counts": {
+    "ok": 6,
+    "total": 6
+  },
+  "scenarios": [
+    {
+      "scenario_id": "base_case",
+      "outcome": "ok",
+      "script": "scenarios\\base_case.wl",
+      "result": "scenarios\\base_case_result.json",
+      "result_found": true,
+      "result_status": "success",
+      "process_status": null,
+      "returncode": null,
+      "timed_out": false,
+      "failed_at": "",
+      "warnings": [],
+      "stage_ids": [
+        "strategy_enumeration",
+        "allocation_optimization",
+        "pricing_optimization",
+        "policy_comparison"
+      ],
+      "equilibrium_vars": [
+        "strategy",
+        "p",
+        "xR",
+        "xK"
+      ],
+      "missing_sections": [],
+      "issue_summary": []
+    },
+    {
+      "scenario_id": "high_transparency",
+      "outcome": "ok",
+      "script": "scenarios\\high_transparency.wl",
+      "result": "scenarios\\high_transparency_result.json",
+      "result_found": true,
+      "result_status": "success",
+      "process_status": null,
+      "returncode": null,
+      "timed_out": false,
+      "failed_at": "",
+      "warnings": [],
+      "stage_ids": [
+        "strategy_enumeration",
+        "allocation_optimization",
+        "pricing_optimization",
+        "policy_comparison"
+      ],
+      "equilibrium_vars": [
+        "strategy",
+        "p",
+        "xR",
+        "xK"
+      ],
+      "missing_sections": [],
+      "issue_summary": []
+    },
+    {
+      "scenario_id": "high_consumer_premium",
+      "outcome": "ok",
+      "script": "scenarios\\high_consumer_premium.wl",
+      "result": "scenarios\\high_consumer_premium_result.json",
+      "result_found": true,
+      "result_status": "success",
+      "process_status": null,
+      "returncode": null,
+      "timed_out": false,
+      "failed_at": "",
+      "warnings": [],
+      "stage_ids": [
+        "strategy_enumeration",
+        "allocation_optimization",
+        "pricing_optimization",
+        "policy_comparison"
+      ],
+      "equilibrium_vars": [
+        "strategy",
+        "p",
+        "xR",
+        "xK"
+      ],
+      "missing_sections": [],
+      "issue_summary": []
+    },
+    {
+      "scenario_id": "large_conscious_segment",
+      "outcome": "ok",
+      "script": "scenarios\\large_conscious_segment.wl",
+      "result": "scenarios\\large_conscious_segment_result.json",
+      "result_found": true,
+      "result_status": "success",
+      "process_status": null,
+      "returncode": null,
+      "timed_out": false,
+      "failed_at": "",
+      "warnings": [],
+      "stage_ids": [
+        "strategy_enumeration",
+        "allocation_optimization",
+        "pricing_optimization",
+        "policy_comparison"
+      ],
+      "equilibrium_vars": [
+        "strategy",
+        "p",
+        "xR",
+        "xK"
+      ],
+      "missing_sections": [],
+      "issue_summary": []
+    },
+    {
+      "scenario_id": "strong_penalty",
+      "outcome": "ok",
+      "script": "scenarios\\strong_penalty.wl",
+      "result": "scenarios\\strong_penalty_result.json",
+      "result_found": true,
+      "result_status": "success",
+      "process_status": null,
+      "returncode": null,
+      "timed_out": false,
+      "failed_at": "",
+      "warnings": [],
+      "stage_ids": [
+        "strategy_enumeration",
+        "allocation_optimization",
+        "pricing_optimization",
+        "policy_comparison"
+      ],
+      "equilibrium_vars": [
+        "strategy",
+        "p",
+        "xR",
+        "xK"
+      ],
+      "missing_sections": [],
+      "issue_summary": []
+    },
+    {
+      "scenario_id": "high_responsible_cost",
+      "outcome": "ok",
+      "script": "scenarios\\high_responsible_cost.wl",
+      "result": "scenarios\\high_responsible_cost_result.json",
+      "result_found": true,
+      "result_status": "success",
+      "process_status": null,
+      "returncode": null,
+      "timed_out": false,
+      "failed_at": "",
+      "warnings": [],
+      "stage_ids": [
+        "strategy_enumeration",
+        "allocation_optimization",
+        "pricing_optimization",
+        "policy_comparison"
+      ],
+      "equilibrium_vars": [
+        "strategy",
+        "p",
+        "xR",
+        "xK"
+      ],
+      "missing_sections": [],
+      "issue_summary": []
+    }
+  ]
+}

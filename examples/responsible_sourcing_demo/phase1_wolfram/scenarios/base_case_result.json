@@ -1,0 +1,93 @@
+{
+  "scenario_id": "base_case",
+  "status": "success",
+  "failed_at": "",
+  "warnings": [],
+  "managerial_insights": [
+    "balanced profit and responsibility exposure"
+  ],
+  "stage_results": {
+    "strategy_enumeration": {
+      "solve_type": "enumeration",
+      "chosen_strategy": "dual_sourcing",
+      "candidate_strategies": [
+        "low_cost_sourcing",
+        "dual_sourcing",
+        "responsible_niche",
+        "responsible_mass_market"
+      ],
+      "strategy_profiles": [
+        {
+          "strategy": "dual_sourcing",
+          "selected": true,
+          "reason": "highest buyer payoff in this precomputed scenario"
+        }
+      ],
+      "pure_nash_conditions": []
+    },
+    "allocation_optimization": {
+      "solve_type": "optimization",
+      "decision_variables": [
+        "xR",
+        "xK"
+      ],
+      "objectives": {
+        "B": "maximize expected buyer payoff over sourcing shares"
+      },
+      "candidate_rules": {
+        "xR": "0.55",
+        "xK": "0.45"
+      }
+    },
+    "pricing_optimization": {
+      "solve_type": "optimization",
+      "decision_variables": [
+        "p"
+      ],
+      "objectives": {
+        "B": "maximize expected buyer payoff over retail price"
+      },
+      "candidate_rules": {
+        "p": "1.32"
+      }
+    },
+    "policy_comparison": {
+      "solve_type": "enumeration",
+      "scenario_axes": {
+        "transparency": "moderate",
+        "consumer_pressure": "moderate",
+        "enforcement": "moderate"
+      },
+      "responsible_share": "0.55",
+      "risky_share": "0.45",
+      "managerial_insights": [
+        "balanced profit and responsibility exposure"
+      ],
+      "strategy_profiles": [
+        {
+          "scenario": "base_case",
+          "strategy": "dual_sourcing",
+          "responsible_share": "0.55",
+          "risky_share": "0.45"
+        }
+      ],
+      "pure_nash_conditions": []
+    }
+  },
+  "equilibrium": {
+    "strategy": "dual_sourcing",
+    "p": "1.32",
+    "xR": "0.55",
+    "xK": "0.45"
+  },
+  "subscribed_players": [],
+  "expected_pricing_profits": {
+    "B": "0.184",
+    "RS": "0.071",
+    "KS": "0.052"
+  },
+  "contract_terms": {},
+  "phase1_options": {
+    "solve_mode": "precomputed-demo"
+  }
+}

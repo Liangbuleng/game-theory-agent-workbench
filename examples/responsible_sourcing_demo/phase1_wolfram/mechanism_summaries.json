@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "handlers": {
+    "responsible_sourcing": {
+      "title": "Responsible Sourcing Comparison",
+      "responsible_mass_market_scenarios": [
+        "high_transparency",
+        "large_conscious_segment",
+        "strong_penalty"
+      ],
+      "summary": "Transparency, large socially conscious demand, and strong penalties all support responsible mass-market sourcing in this demo."
+    }
+  },
+  "manifest_title": "Synthetic Responsible Sourcing Game"
+}

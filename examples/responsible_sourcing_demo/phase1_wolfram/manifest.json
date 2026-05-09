@@ -1,0 +1,44 @@
+{
+  "generator": "precomputed-demo-v1",
+  "title": "Synthetic Responsible Sourcing Game",
+  "method": "stackelberg_backward_induction",
+  "options": {
+    "solve_mode": "precomputed",
+    "solve_timeout_seconds": 0,
+    "simplify_timeout_seconds": 0
+  },
+  "scenario_count": 6,
+  "scenarios": [
+    {
+      "scenario_id": "base_case",
+      "script": "scenarios/base_case.wl",
+      "result": "scenarios/base_case_result.json"
+    },
+    {
+      "scenario_id": "high_transparency",
+      "script": "scenarios/high_transparency.wl",
+      "result": "scenarios/high_transparency_result.json"
+    },
+    {
+      "scenario_id": "high_consumer_premium",
+      "script": "scenarios/high_consumer_premium.wl",
+      "result": "scenarios/high_consumer_premium_result.json"
+    },
+    {
+      "scenario_id": "large_conscious_segment",
+      "script": "scenarios/large_conscious_segment.wl",
+      "result": "scenarios/large_conscious_segment_result.json"
+    },
+    {
+      "scenario_id": "strong_penalty",
+      "script": "scenarios/strong_penalty.wl",
+      "result": "scenarios/strong_penalty_result.json"
+    },
+    {
+      "scenario_id": "high_responsible_cost",
+      "script": "scenarios/high_responsible_cost.wl",
+      "result": "scenarios/high_responsible_cost_result.json"
+    }
+  ],
+  "run_all": "run_all.wl"
+}
