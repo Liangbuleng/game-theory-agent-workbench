@@ -1,0 +1,18 @@
+{
+	"scenario_id":"cournot_test",
+	"status":"success",
+	"model_hash":"cournot_v1",
+	"warnings":[],
+	"equilibrium":{
+		"q1_star":"(a - 2*c1 + c2)\/3",
+		"q2_star":"(a + c1 - 2*c2)\/3"
+	},
+	"profits":{
+		"pi1":"(a - 2*c1 + c2)^2\/9",
+		"pi2":"(a + c1 - 2*c2)^2\/9"
+	},
+	"sanity_checks":{
+		"foc_residual_q1":"0",
+		"foc_residual_q2":"0"
+	}
+}

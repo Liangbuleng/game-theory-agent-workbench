@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# User papers and generated outputs
+output/
+papers/
+*.pdf
+*.doc
+*.docx
+
+# API keys
+.env
+*.env
+
+# Test temp files
+pytest_tmp*/
+pytest-cache-files-*/
+
+# Logs
+*.log
+
+# OS
+.DS_Store

@@ -1,0 +1,11 @@
+# environment.yml
+name: gta
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pandoc
+  - pip
+  - pip:
+      - -e .

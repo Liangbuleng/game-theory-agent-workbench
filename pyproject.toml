@@ -1,0 +1,30 @@
+[project]
+name = "game-theory-agent"
+version = "0.1.0"
+description = "An agent for solving game-theoretic models with LLM assistance"
+requires-python = ">=3.10"
+dependencies = [
+    "anthropic>=0.40.0",
+    "openai>=1.50.0",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "jinja2>=3.1",
+    "python-docx>=1.1",
+    "pypdf>=4.0",
+    "python-dotenv>=1.0",       # 新增：自动读 .env 文件
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter",
+    "pytest",
+    "ipykernel",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["agent*"]
+

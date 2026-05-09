@@ -1,0 +1,148 @@
+# ============================================================
+# Game Theory Agent - LLM 配置
+# ============================================================
+#
+# 默认情况：填一个 provider 的 API key 就能跑通整个 agent。
+# 进阶情况：开启 use_phase_providers 后，可为不同阶段配不同 provider，
+#          精细控制 token 成本。
+#
+# 真实 API key 不要写在这里，请放到 .env 文件中。
+# 此文件可以提交到 git。
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 默认 provider：所有阶段都用这个，除非启用 phase_providers
+# ------------------------------------------------------------
+default_provider: qwen
+
+
+# ------------------------------------------------------------
+# 阶段化 provider 开关
+#
+# false：所有阶段都用 default_provider（默认，开箱即用）
+# true：根据 phase_providers 给不同阶段分配不同 provider
+# ------------------------------------------------------------
+use_phase_providers: false
+
+
+# ------------------------------------------------------------
+# 阶段化 provider 配置（仅当 use_phase_providers: true 时生效）
+#
+# 已知阶段：
+#   parser           - Phase 0 解析论文，建议用支持 PDF 的强模型
+#   planner          - Phase 0 生成求解计划
+#   error_diagnosis  - Phase 1.5 诊断 Mathematica 错误
+#   reporter         - Phase 3 生成最终报告
+#
+# 未列出的阶段会 fallback 到 default_provider。
+# ------------------------------------------------------------
+phase_providers:
+  parser: anthropic
+  planner: anthropic
+  error_diagnosis: anthropic
+  reporter: deepseek
+
+
+# ------------------------------------------------------------
+# Provider 详细配置
+#
+# 每个 provider 包含：
+#   protocol      - 'anthropic' 或 'openai'。决定调用哪个 SDK。
+#   model         - 模型名
+#   api_key_env   - API key 在环境变量中的名字（实际值在 .env 中）
+#   base_url      - OpenAI 协议必填；Anthropic 协议可省略
+#   max_tokens    - 单次响应的最大 token 数
+#   timeout       - API 请求超时（秒）
+#   capabilities  - provider 的能力标记，影响文档加载方式
+#     supports_pdf    - 是否支持原生 PDF 输入
+#     supports_image  - 是否支持图像输入
+#
+# 你只需要填实际有 API key 的那个 provider 的相关字段。
+# 其他 provider 配置保留无妨——只要不在 default_provider 或
+# phase_providers 中引用，就不会被加载。
+# ------------------------------------------------------------
+providers:
+
+  # === Anthropic Claude（原生协议，支持 PDF）===
+  anthropic:
+    protocol: anthropic
+    model: claude-sonnet-4-5
+    api_key_env: ANTHROPIC_API_KEY
+    max_tokens: 24000
+    timeout: 120
+    capabilities:
+      supports_pdf: true
+      supports_image: true
+
+  # === OpenAI GPT（OpenAI 协议）===
+  openai:
+    protocol: openai
+    model: gpt-4o
+    api_key_env: OPENAI_API_KEY
+    base_url: https://api.openai.com/v1
+    max_tokens: 24000
+    timeout: 120
+    capabilities:
+      supports_pdf: true
+      supports_image: true
+
+  # === DeepSeek（OpenAI 兼容协议，纯文本）===
+  deepseek:
+    protocol: openai
+    model: deepseek-v4-flash
+    api_key_env: DEEPSEEK_API_KEY
+    base_url: https://api.deepseek.com/v1
+    max_tokens: 24000
+    timeout: 120
+    capabilities:
+      supports_pdf: false
+      supports_image: false
+
+  # === 通义千问 文本版（OpenAI 兼容协议）===
+  qwen:
+    protocol: openai
+    model: qwen3.6-plus
+    api_key_env: DASHSCOPE_API_KEY
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    max_tokens: 24000
+    timeout: 120
+    capabilities:
+      supports_pdf: false
+      supports_image: false
+
+  # === 通义千问 视觉版（OpenAI 兼容协议）===
+  qwen-vl:
+    protocol: openai
+    model: qwen-vl-max
+    api_key_env: DASHSCOPE_API_KEY
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    max_tokens: 24000
+    timeout: 120
+    capabilities:
+      supports_pdf: false
+      supports_image: true
+
+  # === Kimi（OpenAI 兼容协议）===
+  moonshot:
+    protocol: openai
+    model: moonshot-v1-128k
+    api_key_env: MOONSHOT_API_KEY
+    base_url: https://api.moonshot.cn/v1
+    max_tokens: 24000
+    timeout: 120
+    capabilities:
+      supports_pdf: false
+      supports_image: false
+
+  # === 智谱  文本版（OpenAI 兼容协议）===
+  zhipu:
+    protocol: openai
+    model: glm-5.1
+    api_key_env: ZHIPU_API_KEY
+    base_url: https://open.bigmodel.cn/api/paas/v4
+    max_tokens: 24000
+    timeout: 120
+    capabilities:
+      supports_pdf: false
+      supports_image: false
