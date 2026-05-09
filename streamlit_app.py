@@ -738,6 +738,11 @@ class _NullLLMClient:
 
 def _demo_mode() -> bool:
     value = os.environ.get("GTA_DEMO_MODE", "")
+    if not value:
+        try:
+            value = str(st.secrets.get("GTA_DEMO_MODE", ""))
+        except Exception:
+            value = ""
     return value.lower() in {"1", "true", "yes", "on"}
 
 
