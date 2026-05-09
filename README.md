@@ -9,7 +9,7 @@ machine-readable `ModelSpec`, and inspect Wolfram-based equilibrium reports.
 ## Quick Start
 
 ```powershell
-git clone <repo-url>
+git clone https://github.com/Liangbuleng/game-theory-agent-workbench.git
 cd game-theory-agent-workbench
 conda env create -f environment.local.yml
 conda activate gta
@@ -46,13 +46,8 @@ python -m streamlit run streamlit_app.py
 
 ## Online Demo
 
-Online demo: `<streamlit-demo-url>`
+Online demo: https://game-theory-agent-workbench-vbebxt2dgvnqnbdnew4llh.streamlit.app/
 
-The online demo should be deployed with:
-
-```text
-GTA_DEMO_MODE=1
-```
 
 Demo mode uses a synthetic responsible-sourcing example with precomputed
 artifacts. It does not call external LLM APIs and does not run WolframScript.
@@ -69,7 +64,7 @@ artifacts. It does not call external LLM APIs and does not run WolframScript.
 ## 快速开始
 
 ```powershell
-git clone <repo-url>
+git clone https://github.com/Liangbuleng/game-theory-agent-workbench.git
 cd game-theory-agent-workbench
 conda env create -f environment.local.yml
 conda activate gta
@@ -106,13 +101,8 @@ python -m streamlit run streamlit_app.py
 
 ## 在线 Demo
 
-在线演示地址：`<streamlit-demo-url>`
-
-在线 demo 部署时应设置：
-
-```text
-GTA_DEMO_MODE=1
-```
+在线演示地址：https://game-theory-agent-workbench-vbebxt2dgvnqnbdnew4llh.streamlit.app/
+如果打不开该链接，请关闭代理
 
 Demo 模式使用一个合成的 responsible sourcing 示例和预计算结果，不会调用外部 LLM API，也不会运行 WolframScript。
 
